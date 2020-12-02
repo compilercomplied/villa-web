@@ -1,0 +1,29 @@
+
+ul {
+  padding-left: 5vw;
+}
+
+
+li {
+  list-style-type: none; 
+}
+
+.card-container {
+  display:flex;
+  flex-direction: row;
+  max-height: 5vh;
+
+  align-items:center;
+}
+.card-tag {
+
+  max-width: 5vh;
+  display:flex;
+  flex-direction: column;
+
+}
+.card-info {
+  padding-left: 5vmin;
+  text-align: justify;
+
+}
