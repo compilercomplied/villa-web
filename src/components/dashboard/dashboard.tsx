@@ -46,18 +46,21 @@ export const Dashboard = () => {
 
   const [tran, setTran] = useState([] as Transaction[]);
 
-
   useEffect(() => {
-    fetchDashboard()
-      .then(payload => setTran(t => t.concat(payload.transactions)));
-  }, []);
 
+    (async () => {
+      const response = await fetchDashboard();
+      setTran(t => t.concat(response.transactions));
+    })();
+
+  }, []);
 
   useScrollPos(tran, setTran);
 
 
   return ( 
-    <div>
+    <div 
+      className="tran-container">
     <ul>{tranItemEL(tran)}</ul> 
     <button onClick={(e) => clickListener(tran, setTran)}></button>
     </div>
