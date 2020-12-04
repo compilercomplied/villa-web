@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import "./dashboard.css"
-import { ReactComponent as Placeholder } from "../../assets/icons/categories/placeholder.svg";
+import { ReactComponent as Placeholder } from "../../../assets/icons/categories/placeholder.svg";
 import { Transaction } from "../../domain/transaction";
 import { fetchDashboard, refreshDashboardTransactions } from "../../http/villa/dashboard";
 
