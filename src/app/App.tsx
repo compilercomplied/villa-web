@@ -1,10 +1,10 @@
 import React from 'react';
 import './App.css';
-import { Dashboard } from './components/dashboard/dashboard';
+import AppRouter from './routing/app-router';
 
 function App() {
   return (
-    <Dashboard></Dashboard>
+    <AppRouter/>
   );
 }
 

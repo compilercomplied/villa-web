@@ -1,6 +1,6 @@
 import React, { useEffect } from "react";
 import { Transaction } from "../../../domain/transaction";
-import { SetState } from "../../../extensions.ts/react-wrap";
+import { SetState } from "../../../extensions/react-wrap";
 import { usePageBottom } from "../../../hooks/page-bottom";
 import { refreshDashboardTransactions } from "../../../http/villa/dashboard";
 import { TransactionItem } from "./transaction-item";

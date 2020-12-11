@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import "./dashboard.css"
 import { Transaction } from "../../domain/transaction";
 import { fetchDashboard } from "../../http/villa/dashboard";
-import { SetState } from "../../extensions.ts/react-wrap";
+import { SetState } from "../../extensions/react-wrap";
 import { TransactionList } from "./transaction-list/transaction-list";
 
 export const Dashboard = () => {
