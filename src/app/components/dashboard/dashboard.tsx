@@ -8,7 +8,7 @@ import { TransactionList } from "./transaction-list/transaction-list";
 export const Dashboard = () => {
 
   const [tran, setTran] = useState([] as Transaction[]);
-  
+
 
   useEffect(() => {
 

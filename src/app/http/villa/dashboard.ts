@@ -1,8 +1,10 @@
-import Axios, { AxiosResponse } from "axios";
+import Axios, { AxiosRequestConfig, AxiosResponse } from "axios";
 import { Transaction } from "../../domain/transaction";
 
+// TODO api constants
 const baseUri = "https://localhost:3001/api";
 
+// TODO error handling
 
 // --- Dashboard ---------------------------------------------------------------
 export type DashboardResponse = {
@@ -13,7 +15,9 @@ export type DashboardResponse = {
 
 export const fetchDashboard = async (): Promise<DashboardResponse> => {
 
-  return await Axios.get(baseUri + "/dashboard").then(
+  const config: AxiosRequestConfig = buildBaseConfig();
+
+  return await Axios.get(baseUri + "/dashboard", config).then(
     (response: AxiosResponse<DashboardResponse>) => response.data
   );
 
@@ -25,8 +29,22 @@ type refreshTransactionsQuery = {
 export const refreshDashboardTransactions = 
   async (body: refreshTransactionsQuery): Promise<Transaction[]> => {
 
-  return await Axios.post(baseUri + "/dashboard/transactions", body).then(
+  const config: AxiosRequestConfig = buildBaseConfig();
+
+  return await Axios.post(baseUri + "/dashboard/transactions", body, config).then(
     (response: AxiosResponse<Transaction[]>) => response.data
   );
 
 };
+
+// --- Helpers -----------------------------------------------------------------
+
+function buildBaseConfig(): AxiosRequestConfig {
+
+  const jwt = window.sessionStorage.getItem("jwt");
+
+  return {
+    headers: { Authorization: `Bearer ${jwt}` }
+  };
+
+}

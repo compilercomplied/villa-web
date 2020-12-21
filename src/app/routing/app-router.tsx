@@ -6,6 +6,7 @@ import { WalledRoute } from "./walled-route";
 
 
 export default function AppRouter() {
+  console.log("router loaded");
   return (
     <Router>
       <Switch>

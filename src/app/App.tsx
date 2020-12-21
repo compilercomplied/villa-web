@@ -1,10 +1,14 @@
 import React from 'react';
 import './App.css';
+import { AuthProvider } from './contexts/auth';
 import AppRouter from './routing/app-router';
 
 function App() {
+  console.log("app loaded");
   return (
-    <AppRouter/>
+    <AuthProvider>
+      <AppRouter/>
+    </AuthProvider>
   );
 }
 

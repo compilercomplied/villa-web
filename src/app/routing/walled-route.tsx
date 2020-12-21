@@ -1,16 +1,15 @@
-import React, { useContext } from "react"
+import React, { useContext } from "react";
 import { Redirect, RouteProps } from "react-router-dom"
-import { Dashboard } from "../components/dashboard/dashboard"
-import { IdentityContext } from "../contexts/identity"
+import { Dashboard } from "../components/dashboard/dashboard";
+import { AuthCtx } from "../contexts/auth";
 
 
 export const WalledRoute = (props: RouteProps) => {
 
-  const identity = useContext(IdentityContext);
+  const { state: auth } = useContext(AuthCtx);
 
-  if (!identity?.isAuthenticated() ?? false) 
-    return ( <Redirect to="/login" /> );
-
+  console.log("walled route");
+  if (!auth.isSignedIn) return ( <Redirect to="/login" /> );
 
   return ( <Dashboard/> );
 

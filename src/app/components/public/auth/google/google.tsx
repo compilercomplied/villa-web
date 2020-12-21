@@ -1,6 +1,7 @@
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
+import { useHistory } from "react-router-dom";
+import { AuthCtx } from "../../../../contexts/auth";
 import { useScript } from "../../../../hooks/script";
-import { onGoogleSignIn } from "./extract-identity";
 
 const clientID = process.env.REACT_APP_GOOGLE_CLIENTID;
 // TODO handle env properly
@@ -20,8 +21,8 @@ const initAuth2 = () => {
   window.gapi.auth2.init({
     client_id: clientID,
     cookie_policy: 'single_host_origin',
-    scope: "profile email openid",
-    fetch_basic_profile: true,
+    scope: "email",
+    fetch_basic_profile: false,
     ux_mode: "popup",
     redirect_uri: redirectURI,
   });
@@ -32,6 +33,9 @@ export const GoogleSignIn = () => {
 
   const [gapiLoaded, setGapiLoaded] = useState(false);
   const [platformLoaded, setPlatformLoaded] = useState(false);
+  const { state: auth, dispatch } = useContext(AuthCtx);
+  const history = useHistory();
+  console.log("login");
 
   const onGapiLoad = () => {
 
@@ -51,6 +55,16 @@ export const GoogleSignIn = () => {
   useScript("https://apis.google.com/js/platform.js", onPlatformLoad);
   useScript("https://apis.google.com/js/client.js", onGapiLoad);
 
+  const onGoogleSignIn = (googleUser: gapi.auth2.GoogleUser) => {
+
+    if(!googleUser.isSignedIn()) return;
+
+    const token = googleUser.getAuthResponse()?.id_token;
+    dispatch({type: 'login', payload: token});
+    sessionStorage.setItem("jwt", token);
+    history.push("/");
+
+  }
 
   useEffect(() => {
     if (!gapiLoaded || !platformLoaded) return;
