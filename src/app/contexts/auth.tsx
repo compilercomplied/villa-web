@@ -34,10 +34,9 @@ const reducer = (state: State, action: Action) => {
   switch (action.type) {
 
     case "login":
-      console.log(`signed in with jwt: ${action.payload}`);
       return { isSignedIn: true, jwt: action.payload };
 
-    default: throw new Error("unexpected reducer argument");
+    default: throw new Error(`unexpected reducer argument: ${action}`);
 
   }
 
@@ -49,7 +48,6 @@ const reducer = (state: State, action: Action) => {
 export const AuthProvider = (props:any) => {
   const [state, dispatch] = useReducer(reducer, initialState)
 
-  console.log("auth provider loaded");
   return (
     <AuthCtx.Provider value={{state, dispatch}}>
       {props.children}

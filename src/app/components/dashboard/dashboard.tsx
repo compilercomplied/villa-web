@@ -1,23 +1,22 @@
 import React, { useEffect, useState } from "react";
 import "./dashboard.css"
 import { Transaction } from "../../domain/transaction";
-import { fetchDashboard } from "../../http/villa/dashboard";
-import { SetState } from "../../extensions/react-wrap";
+import { useBaseDashboard } from "../../http/villa/dashboard";
 import { TransactionList } from "./transaction-list/transaction-list";
 
 export const Dashboard = () => {
 
   const [tran, setTran] = useState([] as Transaction[]);
 
+  const dashboard = useBaseDashboard();
+
 
   useEffect(() => {
 
-    (async (setTran: SetState<Transaction[]>) => {
-      const response = await fetchDashboard();
-      setTran(t => t.concat(response.transactions));
-    })(setTran);
+    if ((dashboard?.transactions?.length ?? -1) <= 0) return;
+    setTran(t => t.concat(dashboard.transactions));
 
-  }, []);
+  }, [dashboard]);
 
 
 

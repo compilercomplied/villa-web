@@ -1,10 +1,8 @@
-import Axios, { AxiosRequestConfig, AxiosResponse } from "axios";
+import { APIParams, HttpVerb } from "../../constants/http";
 import { Transaction } from "../../domain/transaction";
-
-// TODO api constants
-const baseUri = "https://localhost:3001/api";
-
-// TODO error handling
+import { useAPI } from "../../hooks/api";
+import { useMegaphone } from "../../hooks/megaphone";
+import { VillaAPIPath, VillaAPIRoot } from "./constants";
 
 // --- Dashboard ---------------------------------------------------------------
 export type DashboardResponse = {
@@ -13,38 +11,39 @@ export type DashboardResponse = {
 
 }
 
-export const fetchDashboard = async (): Promise<DashboardResponse> => {
+export const useBaseDashboard = (): DashboardResponse => {
 
-  const config: AxiosRequestConfig = buildBaseConfig();
+  const params = buildBaseConfig("/dashboard", "GET");
 
-  return await Axios.get(baseUri + "/dashboard", config).then(
-    (response: AxiosResponse<DashboardResponse>) => response.data
-  );
+  const { response, error } = useAPI<DashboardResponse>(params);
+  useMegaphone(error);
+
+  return response;
 
 };
 
-type refreshTransactionsQuery = {
-  skipCount: number,
-};
-export const refreshDashboardTransactions = 
-  async (body: refreshTransactionsQuery): Promise<Transaction[]> => {
 
-  const config: AxiosRequestConfig = buildBaseConfig();
+export const useTransactionsRefresh = 
+(skipCount: number, onHit: boolean): Transaction[] => {
 
-  return await Axios.post(baseUri + "/dashboard/transactions", body, config).then(
-    (response: AxiosResponse<Transaction[]>) => response.data
-  );
+  const params = buildBaseConfig("/dashboard/transactions", "POST");
+  params.body = { skipCount: skipCount };
+
+  const { response, error } = useAPI<Transaction[]>(params, onHit);
+  useMegaphone(error);
+
+  return response;
 
 };
 
 // --- Helpers -----------------------------------------------------------------
-
-function buildBaseConfig(): AxiosRequestConfig {
-
-  const jwt = window.sessionStorage.getItem("jwt");
+function buildBaseConfig(path: VillaAPIPath, verb: HttpVerb): APIParams {
 
   return {
-    headers: { Authorization: `Bearer ${jwt}` }
+    verb: verb,
+    path: path,
+    root: VillaAPIRoot,
+    headers: { auth: `${sessionStorage.getItem("jwt")}`},
   };
 
 }

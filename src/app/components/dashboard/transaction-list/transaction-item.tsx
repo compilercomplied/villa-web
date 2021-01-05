@@ -11,7 +11,7 @@ export const TransactionItem = (value: Transaction) => {
           <Placeholder/>
         </div>
         <div className="card-info">
-          {value.description}
+          {value.description} - {value.date}
         </div>
       </div>
     </li>

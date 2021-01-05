@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { useHistory } from "react-router-dom";
 import { AuthCtx } from "../../../../contexts/auth";
 import { useScript } from "../../../../hooks/script";
@@ -35,7 +35,6 @@ export const GoogleSignIn = () => {
   const [platformLoaded, setPlatformLoaded] = useState(false);
   const { state: auth, dispatch } = useContext(AuthCtx);
   const history = useHistory();
-  console.log("login");
 
   const onGapiLoad = () => {
 
@@ -76,6 +75,7 @@ export const GoogleSignIn = () => {
       onsuccess: onGoogleSignIn,
     });
 
+  // eslint-disable-next-line
   }, [gapiLoaded, platformLoaded]);
 
   return ( <div id="google-signin"/> );

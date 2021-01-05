@@ -1,8 +1,12 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
+import { Toastable } from "../../../domain/notification-bubble/ABC";
+import { WarningToast } from "../../../domain/notification-bubble/warning";
 import { Transaction } from "../../../domain/transaction";
 import { SetState } from "../../../extensions/react-wrap";
+import { Optional } from "../../../extensions/types";
+import { useMegaphone } from "../../../hooks/megaphone";
 import { usePageBottom } from "../../../hooks/page-bottom";
-import { refreshDashboardTransactions } from "../../../http/villa/dashboard";
+import { useTransactionsRefresh } from "../../../http/villa/dashboard";
 import { TransactionItem } from "./transaction-item";
 
 type TListInput = {
@@ -14,41 +18,48 @@ type TListInput = {
 
 export const TransactionList = (args: TListInput) => {
 
+  const { tran, setTran } = args;
+  const [ clicked, setClicked ] = useState(false);
+  const [ toast, setToast ] = useState(undefined as Optional<Toastable>);
+  const [ pastFirstLoad, setPastFirstLoad ] = useState(false);
+
+
   const isPageBottom = usePageBottom();
+  useMegaphone(toast);
+
+  const tranRefresh = useTransactionsRefresh(
+    tran.length, (isPageBottom || clicked)
+  );
+
 
   useEffect(() => {
 
-    if (!isPageBottom) return;
-    appendTransactions(args.tran, args.setTran);
+    if ((tranRefresh?.length ?? -1) <= 0) {
+      if (pastFirstLoad) {
+        // cheese: do not hit the API anymore after reaching this point.
+        setToast(new WarningToast("No more transactions left to be shown"));
 
-  }, [isPageBottom])
+      }
+      else { setPastFirstLoad(true); }
+      
+    } else {
+      setTran(t => t.concat(tranRefresh));
+
+    }
+
+  }, [tranRefresh])
+
+  // Bounce back trigger effect. Not liking this one that much, so I hope
+  // it's temporary (hello 2023 me).
+  useEffect(() => setClicked(false), [clicked] );
 
   return (
     <div className="tran-container">
       <ul>
-        {args.tran
-          .map((t) => <TransactionItem {...t}/>
-        )}</ul>
-      <button onClick={(e) => clickHandler(args.tran, args.setTran)}></button>
+        {args.tran.map((t) => <TransactionItem {...t}/>)}
+      </ul>
+      <button onClick={(e) => setClicked(true)}/>
     </div>
   );
 
 };
-
-const appendTransactions = 
-async (tran: Transaction[], setTran: SetState<Transaction[]>) => {
-
-  const response = await refreshDashboardTransactions(
-    { skipCount: tran.length }
-  );
-
-  setTran(t => t.concat(response));
-  
-}
-
-const clickHandler = (data: Transaction[], callback: (_: Transaction[]) => void) => {
-
-  refreshDashboardTransactions({ skipCount: data.length })
-    .then(payload => callback(data.concat(payload)));
-
-}
