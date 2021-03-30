@@ -1,6 +1,6 @@
 import { APIParams, HttpVerb } from "../../constants/http";
 import { Transaction } from "../../domain/transaction";
-import { useAPI } from "../../hooks/api";
+import { useAPI } from "../../hooks/http/api";
 import { useMegaphone } from "../../hooks/megaphone";
 import { VillaAPIPath, VillaAPIRoot } from "./constants";
 
@@ -40,10 +40,11 @@ export const useTransactionsRefresh =
 function buildBaseConfig(path: VillaAPIPath, verb: HttpVerb): APIParams {
 
   return {
+
     verb: verb,
     path: path,
     root: VillaAPIRoot,
-    headers: { auth: `${sessionStorage.getItem("jwt")}`},
+
   };
 
 }

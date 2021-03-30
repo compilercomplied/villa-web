@@ -1,16 +1,13 @@
+import { useAuth0 } from "@auth0/auth0-react";
 import React from "react";
-import { GoogleSignIn } from "./google/google";
 import "./login.css";
 
 
 
-export const SigninComponent = () => {
+export const SigninButton = () => {
 
-  return (
-      <div>
-        <h1>login component</h1>
-        <GoogleSignIn/>
-      </div>
-  );
+  const { loginWithRedirect } = useAuth0();
+
+  return <button onClick={() => loginWithRedirect()}>Log In</button>;
 
 }

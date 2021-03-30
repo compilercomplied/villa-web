@@ -20,7 +20,7 @@ export const TransactionList = (args: TListInput) => {
 
   const { tran, setTran } = args;
   const [ clicked, setClicked ] = useState(false);
-  const [ toast, setToast ] = useState(undefined as Optional<Toastable>);
+  const [ toast, setToast ] = useState<Optional<Toastable>>(undefined);
   const [ pastFirstLoad, setPastFirstLoad ] = useState(false);
 
 
@@ -35,8 +35,8 @@ export const TransactionList = (args: TListInput) => {
   useEffect(() => {
 
     if ((tranRefresh?.length ?? -1) <= 0) {
-      if (pastFirstLoad) {
-        // cheese: do not hit the API anymore after reaching this point.
+      if (pastFirstLoad && (tran?.length ?? 0) > 0) {
+        // TODO  do not hit the API anymore after reaching this point.
         setToast(new WarningToast("No more transactions left to be shown"));
 
       }

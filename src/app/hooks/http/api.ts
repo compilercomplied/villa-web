@@ -1,11 +1,12 @@
 import Axios, { AxiosError, AxiosRequestConfig, AxiosResponse } from "axios";
 import { useEffect, useState } from "react";
-import { APIParams, HttpHeader } from "../constants/http";
-import { APIError } from "../domain/notification-bubble/error/api-error";
-import { VillaError } from "../domain/villa/error-response";
-import { SetState } from "../extensions/react-wrap";
-import { Optional } from "../extensions/types"
-import { useMegaphone } from "./megaphone";
+import { APIParams, HttpHeader } from "../../constants/http";
+import { APIError } from "../../domain/notification-bubble/error/api-error";
+import { VillaError } from "../../domain/villa/error-response";
+import { SetState } from "../../extensions/react-wrap";
+import { Optional } from "../../extensions/types"
+import { useMegaphone } from "../megaphone";
+import { useJWT } from "./jwt";
 
 
 // --- Helpers -----------------------------------------------------------------
@@ -14,18 +15,6 @@ const buildUri =
 
   if (queryParams)  return `${root}${path}${queryParams}`;
   else              return `${root}${path}`;
-
-}
-
-const buildAxiosConfig = 
-  (headers: Optional<HttpHeader>): AxiosRequestConfig => {
-
-  if (!headers) return { } as AxiosRequestConfig;
-
-
-  return {
-    headers: { Authorization: `Bearer ${headers.auth}` }
-  };
 
 }
 
@@ -106,7 +95,7 @@ type APIHookOut<T> = {
 };
 
 export const useAPI = 
-<T>(params: APIParams, trigger: boolean = true): APIHookOut<T>  => {
+  <T>(params: APIParams, trigger: boolean = true): APIHookOut<T>  => {
 
   const [ response, setResponse ] = useState({} as T);
   const [ error, setError ] = useState(undefined as Optional<APIError>);
@@ -116,23 +105,30 @@ export const useAPI =
 
   const { root, path, queryParams, headers, body } = params;
 
-
-  const uri = buildUri(root, path, queryParams);
-  const config = buildAxiosConfig(headers);
+  const { token, error: jwtError } = useJWT();
 
 
   useEffect(() => {
 
-    if (!trigger) return;
+    if (!token || !trigger)  return;
 
     setLoading(true);
+
+
+    const uri = buildUri(root, path, queryParams);
+
+    const config: AxiosRequestConfig = { 
+      headers: { 
+        Authorization: `Bearer ${token}`,
+      },
+    };
+
 
     switch (params.verb) {
       case "GET": 
         (async () => {
           const resp = await get<T>(uri, config); 
           handleAPIResponse(resp, setResponse, setError);
-
         })();
         break;
       case "POST": 
@@ -149,7 +145,7 @@ export const useAPI =
     setLoading(false);
 
   // eslint-disable-next-line
-  }, [ trigger ]);
+  }, [ trigger, token ]);
 
   return { response, error, isLoading };
 
